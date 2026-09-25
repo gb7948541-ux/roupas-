@@ -1,0 +1,44 @@
+const WHATSAPP = "5500000000000";
+
+const products = [
+  {name:"Conjunto Siena",cat:"conjuntos",img:"look-01.jpg"},{name:"Conjunto Roma",cat:"conjuntos",img:"look-02.jpg"},{name:"Conjunto Coral",cat:"conjuntos",img:"look-03.jpg"},{name:"Conjunto Rubi",cat:"conjuntos",img:"look-04.jpg"},{name:"Macaquinho Ameixa",cat:"shorts",img:"look-05.jpg"},{name:"Conjunto Azul",cat:"conjuntos",img:"look-06.jpg"},{name:"Macaquinho Vinho",cat:"shorts",img:"look-07.jpg"},{name:"Vestido Grafite",cat:"vestidos",img:"look-08.jpg"},{name:"Look Listrado",cat:"blusas",img:"look-09.jpg"},{name:"Conjunto Areia",cat:"conjuntos",img:"look-10.jpg"},{name:"Conjunto Duo",cat:"conjuntos",img:"look-11.jpg"},{name:"Macacão Azul",cat:"conjuntos",img:"look-12.jpg"},{name:"Macaquinho Rosa",cat:"shorts",img:"look-13.jpg"},{name:"Macaquinho Preto",cat:"shorts",img:"look-14.jpg"},{name:"Calça Alfaiataria",cat:"calcas",img:"look-15.jpg"},{name:"Conjunto Essencial",cat:"conjuntos",img:"look-16.jpg"},{name:"Short Floral",cat:"shorts",img:"look-17.jpg"},{name:"Calça Caramelo",cat:"calcas",img:"look-18.jpg"},{name:"Conjunto Rubi",cat:"conjuntos",img:"look-19.jpg"},{name:"Conjunto Neutro",cat:"conjuntos",img:"look-20.jpg"},{name:"Conjunto Soft",cat:"conjuntos",img:"look-21.jpg"},{name:"Macaquinho Bordô",cat:"shorts",img:"look-22.jpg"},{name:"Look White",cat:"blusas",img:"look-23.jpg"},{name:"Vestido Preto",cat:"vestidos",img:"look-24.jpg"},{name:"Conjunto Verde",cat:"conjuntos",img:"look-25.jpg"},{name:"Vestido Editorial",cat:"vestidos",img:"look-26.jpg"},{name:"Vestido Marrom",cat:"vestidos",img:"look-27.jpg"},{name:"Vestido Terracota",cat:"vestidos",img:"look-28.jpg"},{name:"Vestido Azul Cinto",cat:"vestidos",img:"look-29.jpg"},{name:"Vestido Aqua",cat:"vestidos",img:"look-30.jpg"},{name:"Conjunto Azul Claro",cat:"conjuntos",img:"look-31.jpg"},{name:"Look Saia & Top",cat:"saias",img:"look-32.jpg"},{name:"Vestido Chocolate",cat:"vestidos",img:"look-33.jpg"},{name:"Vestido Azul",cat:"vestidos",img:"look-34.jpg"},{name:"Vestido Midi",cat:"vestidos",img:"look-35.jpg"},{name:"Vestido Celeste",cat:"vestidos",img:"look-36.jpg"}
+];
+const categoryNames={all:"Tudo",vestidos:"Vestidos",conjuntos:"Conjuntos",blusas:"Blusas",calcas:"Calças",saias:"Saias",shorts:"Shorts"};
+const productsEl=document.querySelector('#products'), filtersEl=document.querySelector('#filters');
+const modal=document.querySelector('#productModal'), modalImg=document.querySelector('#modalImg'), modalCat=document.querySelector('#modalCat'), modalName=document.querySelector('#modalName'), modalWhatsapp=document.querySelector('#modalWhatsapp');
+
+function buildFilters(){
+  filtersEl.innerHTML=Object.entries(categoryNames).map(([key,label])=>`<button class="filter ${key==='all'?'active':''}" data-filter="${key}">${label}</button>`).join('');
+  filtersEl.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{filtersEl.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(btn.dataset.filter)}));
+}
+function render(filter='all'){
+  const visible=products.filter(p=>filter==='all'||p.cat===filter);
+  productsEl.innerHTML=visible.map(p=>`<article class="product" data-index="${products.indexOf(p)}"><div class="product-media"><img src="assets/products/${p.img}" alt="${p.name}" loading="lazy"></div><div class="product-info"><div class="product-name">${p.name}</div><div class="product-meta"><span>${categoryNames[p.cat]}</span><span>VER PEÇA ↗</span></div></div></article>`).join('');
+  productsEl.querySelectorAll('.product').forEach(card=>card.addEventListener('click',()=>openProduct(products[Number(card.dataset.index)])));
+}
+function openProduct(p){
+  modalImg.src=`assets/products/${p.img}`; modalImg.alt=p.name; modalCat.textContent=categoryNames[p.cat]; modalName.textContent=p.name;
+  modalWhatsapp.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Olá! Gostei da peça "${p.name}" da AURA FEMME. Pode me passar disponibilidade, tamanhos e valor?`)}`;
+  modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+}
+function closeProduct(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeProduct));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProduct()});
+buildFilters();render();
+
+/* Entrada automática: apresentação curta, sem botão */
+const intro=document.querySelector('#intro');
+window.setTimeout(()=>{document.body.classList.remove('intro-active');intro.classList.add('exit');window.setTimeout(()=>intro.remove(),1450)},4000);
+
+/* Header */
+const header=document.querySelector('#header');
+window.addEventListener('scroll',()=>header.classList.toggle('scrolled',window.scrollY>40),{passive:true});
+
+/* Menu mobile */
+const menu=document.querySelector('#mobileMenu');
+document.querySelector('#menuBtn').addEventListener('click',()=>menu.classList.toggle('open'));
+document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('open')));
+
+/* Reveals */
+const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
